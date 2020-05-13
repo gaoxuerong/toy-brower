@@ -4,7 +4,7 @@ class Request {
   // url = host + port + path
   // headers
   // body: k/v
-  // toy-brower这个demo模拟浏览器，其中一部分是模拟XMLHttpRequest，其实浏览器也是类似，就是拿到tcp层(require('net'))，去实现了http层
+  // toy-brower这个demo模拟浏览器，其中一部分是模拟XMLHttpRequest，其实浏览器也是类似，就是拿到tcp层(require('net'))，去实现了http层,http层都是操作文本
   constructor(options) {
     this.method = options.method || 'GET'
     this.host = options.host
@@ -30,9 +30,6 @@ ${Object.keys(this.headers).map(key => `${key}:${this.headers[key]}`).join('\r\n
 \r
 ${this.bodyText}`
   }
-  open(method, url) {
-
-  }
   send(connection) {
     return new Promise((resolve, reject) => {
       const parser = new ResponseParser()
@@ -49,6 +46,7 @@ ${this.bodyText}`
       connection.on('data', (data) => {
         parser.receive(data.toString())
         if (parser.isFinished) {
+          // 返回值
           resolve(parser.response)
         }
         connection.end()
@@ -60,11 +58,9 @@ ${this.bodyText}`
     })
   }
 }
-class Response {
-
-}
 class ResponseParser {
   constructor() {
+    // 根据response的返回信息格式，用状态机来表示；
     this.WAITING_STATUS_LINE = 0
     this.WAITING_STATUS_LINE_END = 1
     this.WAITING_HEADER_NAME = 2
@@ -97,6 +93,7 @@ class ResponseParser {
       this.receiveChar(string.charAt(i))
     }
   }
+  // 循环遍历接收到的字符串
   receiveChar(char) {
     if (this.current === this.WAITING_STATUS_LINE) {
       if (char === '\r') {
@@ -167,6 +164,7 @@ class TrunkedBodyParser {
         }
         this.current = this.WAITING_LENGTH_LINE_END
       } else {
+        // 表示 1，2，3等字符串转化为数字的一种方式
         this.length *= 10
         this.length += char.charCodeAt(0) - '0'.charCodeAt(0)
       }
@@ -201,7 +199,8 @@ void async function () {
       ['x-foo2']: 'customed'
     },
     body: {
-      name: 'xuerong'
+      name: 'xuerong',
+      hobby: 'eat and drink'
     }
   })
   const response = await request.send();

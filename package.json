@@ -1,0 +1,23 @@
+{
+  "name": "toy-brower",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaoxuerong/toy-brower.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gaoxuerong/toy-brower/issues"
+  },
+  "homepage": "https://github.com/gaoxuerong/toy-brower#readme",
+  "dependencies": {
+    "css": "^2.2.4"
+  }
+}

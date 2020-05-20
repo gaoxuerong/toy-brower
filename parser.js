@@ -24,7 +24,12 @@ function match(element, selector) {
     }
   } else if(selector.charAt(0) === '.') {
     let attr = element.attributes.filter(attr => attr.name === 'class')[0]
-    if (attr && attr.value === selector.replace('.', '')) {
+    // if (attr && attr.value === selector.replace('.', '')) {
+    //   return true
+    // }
+    // 处理带空格的
+    let flag = attr && attr.value.split(/\s+/).some(attrClassName => attrClassName === selector.replace('.', ''))
+    if (flag) {
       return true
     }
   } else {

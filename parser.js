@@ -15,7 +15,7 @@ function emit(token) {
     }
     element.tagName = token.tagName
     for (let p in token) {
-      if (p != 'type' || p != 'tagName') {
+      if (p !== 'type' && p !== 'tagName') {
         element.attributes.push({
           name: p,
           value: token[p]
@@ -23,6 +23,7 @@ function emit(token) {
       }
     }
     top.children.push(element)
+    element.parent = top
     if(!token.isSelfClosing) {
       stack.push(element)
     }
@@ -42,7 +43,7 @@ function emit(token) {
       }
       top.children.push(currentTextNode)
     }
-    currentTextNode.context += token.context
+    currentTextNode.content += token.content
   }
 }
 
@@ -58,7 +59,7 @@ function data(c) {
   } else {
     emit({
       type: 'text',
-      context: c
+      content: c
     })
     return data;
   }
@@ -115,7 +116,7 @@ function beforeAttributeName(c) {
   if (c.match(/^[\t\n\f ]$/)) {
     return beforeAttributeName;
   } else if (c === '>' || c === '/' || c === EOF) {
-    return attributeName(c);
+    return afterAttributeName(c);
   } else if (c === '=') {
   } else {
     currentAttribute = {
@@ -199,6 +200,7 @@ function UnquotedAttributeValue (c) {
     currentToken[currentAttribute.name] = currentAttribute.value
     return beforeAttributeName
   } else if(c === '/') {
+    currentToken[currentAttribute.name] = currentAttribute.value
     return selfClosingStartTag
   } else if(c === '>') {
     currentToken[currentAttribute.name] = currentAttribute.value
@@ -208,7 +210,7 @@ function UnquotedAttributeValue (c) {
     
   } else if(
     c === "\""
-    || c === "'"
+    || c === "\'"
     || c === "<"
     || c === "="
     || c === "`"

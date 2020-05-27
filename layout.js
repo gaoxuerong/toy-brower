@@ -401,7 +401,7 @@ function layout(element) {
     cSpace += crossSign * (lineCrossSize + step)
   })
 
-  console.log(items)
+  // console.log(items)
 }
 
 module.exports = layout

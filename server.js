@@ -34,5 +34,5 @@ const server = http.createServer((req, res) => {
     </body>
 </html>
 `);
-});
-server.listen(8088)
+})
+server.listen(8088);

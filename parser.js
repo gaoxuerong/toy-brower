@@ -5,11 +5,11 @@ const EOF = Symbol('EOF') // end of file
 let currentToken = null
 let currentAttribute = null
 let currentTextNode = null
-let rules = []
 let stack = [{
   type: 'document',
   children: []
 }]
+let rules = []
 
 // css 相关
 function addCssRules(text) {
@@ -90,7 +90,7 @@ function computeCSS(element) {
     if (matched) {
       let sp = specificity(rule.selectors[0]);
       let computedStyle = element.computedStyle;
-      for(let declaration of rules.declarations) {
+      for(let declaration of rule.declarations) {
         if (!computedStyle[declaration.property]) {
           computedStyle[declaration.property] = {}
         }
@@ -132,15 +132,14 @@ function emit(token) {
     }
     currentTextNode = null
   } else if (token.type === 'endTag') {
-    if (top.tagName !== token.tagName) {
+    if (top.tagName != token.tagName) {
       throw new Error('tag start and end doesn\'t match')
     } else {
       if (top.tagName === 'style') {
         addCssRules(top.children[0].content)
-      } else {
-        layout(top)
-        stack.pop()
       }
+      layout(top)
+      stack.pop()
     }
     currentTextNode = null
   } else if (token.type === 'text') {

@@ -1,14 +1,17 @@
+const layout = require('./layout')
 const CSS = require('css')
+const EOF = Symbol('EOF') // end of file
+
 let currentToken = null
 let currentAttribute = null
-
+let currentTextNode = null
+let rules = []
 let stack = [{
   type: 'document',
   children: []
 }]
-let currentTextNode = null
+
 // css 相关
-let rules = []
 function addCssRules(text) {
   let ast = CSS.parse(text)
   rules.push(...ast.stylesheet.rules)
@@ -65,32 +68,39 @@ function compare(sp1, sp2) {
   return sp1[3] - sp2[3]
 }
 function computeCSS(element) {
-  let elements = stack.slice(' ').reverse()
-  if (!match(element, selectorParts[0])) {
-    continue
+  let elements = stack.slice().reverse()
+  if (!element.computedStyle) {
+    element.computedStyle = {}
   }
-  let j = 1
-  for(let i = 0;i < elements.length;i++) {
-    if (match(elements[i], selectorParts[j])) {
-      j++
+  for (let rule of rules) {
+    const selectorParts = rule.selectors[0].split(" ").reverse()
+    if (!match(element, selectorParts[0])) {
+      continue
     }
-  }
-  if (j >= selectorParts.length) {
-    matched = true
-  }
-  if (matched) {
-    let sp = specificity(rule.selectors[0]);
-    let computedStyle = element.computedStyle;
-    for(let declaration of rules.declarations) {
-      if (!computedStyle[declaration.property]) {
-        computedStyle[declaration.property] = {}
+    let j = 1
+    let matched = false
+    for(let i = 0;i < elements.length;i++) {
+      if (match(elements[i], selectorParts[j])) {
+        j++
       }
-      if (!computedStyle[declaration.property].specificity) {
-        computedStyle[declaration.property].value = declaration.value
-        computedStyle[declaration.property].specificity = sp
-      } else if(compare(computedStyle[declaration.property].specificity, sp) < 0) {
-        computedStyle[declaration.property].value = declaration.value
-        computedStyle[declaration.property].specificity = sp
+    }
+    if (j >= selectorParts.length) {
+      matched = true
+    }
+    if (matched) {
+      let sp = specificity(rule.selectors[0]);
+      let computedStyle = element.computedStyle;
+      for(let declaration of rules.declarations) {
+        if (!computedStyle[declaration.property]) {
+          computedStyle[declaration.property] = {}
+        }
+        if (!computedStyle[declaration.property].specificity) {
+          computedStyle[declaration.property].value = declaration.value
+          computedStyle[declaration.property].specificity = sp
+        } else if(compare(computedStyle[declaration.property].specificity, sp) < 0) {
+          computedStyle[declaration.property].value = declaration.value
+          computedStyle[declaration.property].specificity = sp
+        }
       }
     }
   }
@@ -128,6 +138,7 @@ function emit(token) {
       if (top.tagName === 'style') {
         addCssRules(top.children[0].content)
       } else {
+        layout(top)
         stack.pop()
       }
     }
@@ -144,7 +155,6 @@ function emit(token) {
   }
 }
 
-const EOF = Symbol('EOF') // end of file
 function data(c) {
   if (c === '<') {
     return tagOpen;

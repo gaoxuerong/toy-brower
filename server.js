@@ -11,18 +11,18 @@ const server = http.createServer((req, res) => {
             #container {
                 display: flex;
                 width: 800px;
-                background-color: rgb(0, 255, 0);
+                background-color: rgb(50, 156, 200);
             }
             .item-1 {
-                width: 200px;
-                height: 100px;
+                width: 800px;
+                height: 500px;
                 align-self: center;
-                background-color: rgb(255, 0, 0);
+                background-color: rgb(0, 0, 255);
             }
             .item-2 {
                 flex: 1;
-                height: 200px;
-                background-color: rgb(255, 255, 0);
+                height: 800px;
+                background-color: rgb(0, 255, 0);
             }
         </style>
     </head>

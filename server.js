@@ -2,7 +2,7 @@ const http = require('http')
 const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('X-Foo', 'bar');
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.writeHead(200, { 'Content-Type': 'text/html' });
     // writeHead 优先级高于setHeader，并且writeHead只能用一次;
     res.end(`
 <html>
@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
                 background-color: rgb(50, 156, 200);
             }
             .item-1 {
-                width: 800px;
+                width: 400px;
                 height: 500px;
                 align-self: center;
                 background-color: rgb(0, 0, 255);

@@ -138,9 +138,9 @@ function emit(token) {
       if (top.tagName === 'style') {
         addCssRules(top.children[0].content)
       }
-      layout(top)
       stack.pop()
     }
+    layout(top)
     currentTextNode = null
   } else if (token.type === 'text') {
     if (currentTextNode === null) {
